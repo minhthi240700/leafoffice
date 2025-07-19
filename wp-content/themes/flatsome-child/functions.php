@@ -18,13 +18,34 @@ function my_custom_translations( $strings ) {
 add_filter( 'gettext', 'my_custom_translations', 20 );
 
 // 
-function breabcrumb() {
-	if( !is_front_page() ){
-		if ( function_exists('yoast_breadcrumb') ) {
-			yoast_breadcrumb( '<div id="breadcrumbs"><div class="container">','</div></div>' );
-		} else {
-			echo '<div id="breadcrumbs"><div class="container"><span><span><a href="https://hwood.vn/">Trang chủ</a></span> » <span class="breadcrumb_last" aria-current="page">Tin tức</span></span></div></div>';
+
+function breadcrumb() {
+	if (!is_front_page()) {
+		if (function_exists('rank_math_the_breadcrumbs')) {
+			echo '<div class="breadcrumb-wrapper">';
+			echo '<div class="container">';
+			rank_math_the_breadcrumbs();
+			echo '</div>';
+			echo '</div>';
+		}
+		else {
+			echo '<div class="breadcrumb-wrapper"><div class="container"><nav aria-label="breadcrumbs" class="rank-math-breadcrumb"><p><a href="https://kan.com.vn/">Trang chủ</a><span class="separator"> » </span><span class="last">Tuyển dụng</span></p></nav></div></div>';
 		}
 	}
 }
-add_action('flatsome_after_header','breabcrumb');
+// add_action('flatsome_after_header', 'breadcrumb');
+add_shortcode('breadcrumb', 'breadcrumb');
+
+function ux_builder_element_breadcrumb(){
+    add_ux_builder_shortcode('breadcrumb', array(
+        'name'      => __('Breadcrumb'),
+        'category'  => __('Content'),
+        'priority'  => 1,
+    ));
+}
+add_action('ux_builder_setup', 'ux_builder_element_breadcrumb');
+
+
+add_filter('get_the_date', function($the_date, $d, $post) {
+    return mysql2date('j \T\há\n\g n, Y', $post->post_date);
+}, 10, 3);
